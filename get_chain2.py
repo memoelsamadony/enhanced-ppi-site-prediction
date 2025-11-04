@@ -59,6 +59,16 @@ def extract_chain_from_pdb(pdb_file, chain_id, output_pdb, output_fasta):
         pdb_output.writelines(output_lines)
     print(f"Saved modified chain {chain_id} to {output_pdb}")
 
+    # Write FASTA sequence if requested
+    if output_fasta:
+        seq_str = ''.join(sequence)
+        with open(output_fasta, 'w') as fasta_out:
+            fasta_out.write(f">{os.path.basename(output_pdb)}\n")
+            # wrap to 60 chars per line
+            for i in range(0, len(seq_str), 60):
+                fasta_out.write(seq_str[i:i+60] + "\n")
+        print(f"Saved FASTA for chain {chain_id} to {output_fasta}")
+
     
 
 def main():
