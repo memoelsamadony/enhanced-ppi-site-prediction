@@ -1,4 +1,4 @@
-Enhanced PPI-site Prediction – Inference-only
+Enhanced PPI-site Prediction
 
 This repository now provides inference-only entry points for two models:
 
