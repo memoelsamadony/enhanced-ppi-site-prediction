@@ -57,3 +57,68 @@ Notes
 - The legacy `API/` Flask code is deprecated in favor of the standalone predict functions above.
 - Feature computation utilities remain in `Utilis.py` for reference, but are not invoked by the new predictors.
 - Ensure your IDs (e.g., `1acbI`) match the filenames in `Original_Data`.
+
+## Feature generation toolchain
+
+To compute the residue-level features required by the predictors you need three external tools and their databases. If you already have the `.npy` files under `Original_Data/` you can skip this section.
+
+Required software:
+
+1. DSSP – assigns secondary structure and solvent accessibility.
+2. BLAST+ (PSI-BLAST) – builds PSSM profiles using iterative sequence searches.
+3. HH-suite (hhblits) – generates HMM/HHM profiles capturing remote homology.
+
+Required databases:
+
+* UniRef90 (for PSI-BLAST) – make a BLAST database with `makeblastdb`.
+* Uniclust30 (for hhblits) – prebuilt HMM cluster database.
+
+### Building databases & paths
+
+1. Build UniRef90 BLAST database:
+	 ```bash
+	 makeblastdb -in uniref90.fasta -dbtype prot -parse_seqids -out uniref90
+	 ```
+2. Obtain / build Uniclust30 following the HH-suite instructions.
+3. Install DSSP (e.g. via package manager or source) and ensure the executable `mkdssp` is on disk.
+4. Set the paths in `Utilis.py` (or adapt in your own script):
+	 - `UR90` → path to UniRef90 FASTA (base name used by PSI-BLAST)
+	 - `HHDB` → path prefix to Uniclust30 HMM database
+	 - `PSIBLAST` → full path to `psiblast` executable
+	 - `HHBLITS` → full path to `hhblits` executable
+	 - `dssp` → full path to `mkdssp` executable
+
+### Output file expectations
+
+After running your feature extraction pipeline each protein chain ID (e.g. `1acbI`) should have:
+
+```
+Original_Data/
+	pssm/1acbI.npy    (L x 20)  # normalized PSSM
+	hmm/1acbI.npy     (L x 20)  # HHM/HHblits profile
+	dssp/1acbI.npy    (L x 14)  # DSSP attributes
+	dismap/1acbI.npy   (L x L)   # distance map (for graph model only)
+```
+
+If any file is missing, the corresponding predictor will raise an exception telling you which one to generate.
+
+### Fast vs full graph features
+
+The original GraphPPIS framework supports a fast mode (DSSP + BLOSUM) and a full mode (PSSM + HMM + DSSP). This repository’s `graph_predict.py` implements the full feature mode (54-dim vector per residue). To create a fast-mode variant you would concatenate BLOSUM62 (20) + DSSP (14) = 34 features and load the appropriate weights.
+
+### Citation (original GraphPPIS work)
+
+If you use the graph model architecture or feature generation pipeline please cite:
+
+```
+@article{10.1093/bioinformatics/btab643,
+	author = {Yuan, Qianmu and Chen, Jianwen and Zhao, Huiying and Zhou, Yaoqi and Yang, Yuedong},
+	title = {Structure-aware protein–protein interaction site prediction using deep graph convolutional network},
+	journal = {Bioinformatics},
+	volume = {38},
+	number = {1},
+	pages = {125-132},
+	year = {2021},
+	doi = {10.1093/bioinformatics/btab643}
+}
+```
