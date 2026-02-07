@@ -102,6 +102,28 @@ Original_Data/
 
 If any file is missing, the corresponding predictor will raise an exception telling you which one to generate.
 
+### Benchmarking feature generation
+
+You can measure how long PSI-BLAST and HH-suite take on your machine by prepending `time` to each command. Replace the paths below with your own.
+
+**PSI-BLAST (PSSM generation):**
+
+```bash
+time psiblast -db /path/to/uniref90 -num_iterations 3 -num_alignments 1 \
+  -num_threads 2 -query train/1acbI.fa -out train/1acbI.bla \
+  -out_ascii_pssm train/pssm/1acbI.pssm
+```
+
+**HH-suite / hhblits (HHM generation):**
+
+```bash
+time hhblits -i train/1acbI.fa -ohhm train/hhm/1acbI.hhm \
+  -oa3m train/1acbI.a3m -d /path/to/uniclust30 \
+  -v 0 -maxres 40000 -cpu 6 -Z 0 -o train/1acbI.hhr
+```
+
+To see how parallelism affects runtime, adjust `-num_threads` (PSI-BLAST) or `-cpu` (hhblits).
+
 ### Fast vs full graph features
 
 The original GraphPPIS framework supports a fast mode (DSSP + BLOSUM) and a full mode (PSSM + HMM + DSSP). This repository’s `graph_predict.py` implements the full feature mode (54-dim vector per residue). To create a fast-mode variant you would concatenate BLOSUM62 (20) + DSSP (14) = 34 features and load the appropriate weights.
