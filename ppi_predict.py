@@ -75,7 +75,7 @@ def predict(id: str,
             data_dir: str = 'Original_Data',
             model_path: str = 'model/ppi_model10.h5',
             window_size: int = 19,
-            threshold: float = 0.5) -> Dict[str, List]:
+            threshold: float = 0.5 ) -> Dict[str, List]: # threshold subject to change
     """Run PPI-site prediction for a single protein chain ID.
 
     Returns dict with probabilities and binary labels.
