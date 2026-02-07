@@ -1,17 +1,25 @@
-Enhanced PPI-site Prediction
+# Enhanced PPI-site Prediction
 
-This repository now provides inference-only entry points for two models:
+This repository provides inference-only entry points for two models:
 
 - Sequence CNN model: `ppi_predict.py`
 - Graph GNN model (GraphPPIS): `graph_predict.py`
 
 Most of the training code is included in the experimental code folder. Each module above exposes a single `predict(...)` function for inference.
 
-Usage
+## Installation
 
-Python 3.8+ with packages numpy, tensorflow (for PPI CNN) and torch (for GraphPPIS) is required.
+Python 3.8+ is required. Install the core dependencies:
 
-1) PPI (sequence) model
+```bash
+pip install numpy tensorflow torch
+```
+
+`tensorflow` is needed for the sequence CNN model and `torch` for the graph GNN model.
+
+## Usage
+
+### 1) PPI (sequence) model
 
 The PPI model expects precomputed per-residue features in `Original_Data/`:
 
@@ -21,7 +29,7 @@ The PPI model expects precomputed per-residue features in `Original_Data/`:
 
 Weights: `model/ppi_model10.h5`
 
-Example
+#### Example
 
 ```python
 from ppi_predict import predict
@@ -29,7 +37,7 @@ res = predict('1acbI', data_dir='Original_Data', model_path='model/ppi_model10.h
 print(res['labels'][:10])  # first 10 residues
 ```
 
-2) Graph (GraphPPIS) model
+### 2) Graph (GraphPPIS) model
 
 The GraphPPIS model expects the same residue features plus a distance map:
 
@@ -40,7 +48,7 @@ The GraphPPIS model expects the same residue features plus a distance map:
 
 Weights: `model/GraphPPIS_normal.pkl`
 
-Example
+#### Example
 
 ```python
 from graph_predict import predict
@@ -48,11 +56,11 @@ res = predict('1acbI', data_dir='Original_Data', weights_path='model/GraphPPIS_n
 print(res['labels'][:10])
 ```
 
-Chain extraction helper
+### Chain extraction helper
 
 For preparing inputs from PDB files, use `get_chain2.py` (recommended). It can extract a specific chain and now writes both a filtered PDB and a FASTA file for that chain.
 
-Notes
+### Notes
 
 - The legacy `API/` Flask code is deprecated in favor of the standalone predict functions above.
 - Feature computation utilities remain in `Utilis.py` for reference, but are not invoked by the new predictors.
