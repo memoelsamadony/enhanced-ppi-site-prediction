@@ -5,7 +5,7 @@ This repository now provides inference-only entry points for two models:
 - Sequence CNN model: `ppi_predict.py`
 - Graph GNN model (GraphPPIS): `graph_predict.py`
 
-No training code is included in these modules; each exposes a single `predict(...)` function.
+Most of the training code is included in the experimental code folder. Each module above exposes a single `predict(...)` function for inference.
 
 Usage
 
@@ -128,19 +128,3 @@ To see how parallelism affects runtime, adjust `-num_threads` (PSI-BLAST) or `-c
 
 The original GraphPPIS framework supports a fast mode (DSSP + BLOSUM) and a full mode (PSSM + HMM + DSSP). This repository’s `graph_predict.py` implements the full feature mode (54-dim vector per residue). To create a fast-mode variant you would concatenate BLOSUM62 (20) + DSSP (14) = 34 features and load the appropriate weights.
 
-### Citation (original GraphPPIS work)
-
-If you use the graph model architecture or feature generation pipeline please cite:
-
-```
-@article{10.1093/bioinformatics/btab643,
-	author = {Yuan, Qianmu and Chen, Jianwen and Zhao, Huiying and Zhou, Yaoqi and Yang, Yuedong},
-	title = {Structure-aware protein–protein interaction site prediction using deep graph convolutional network},
-	journal = {Bioinformatics},
-	volume = {38},
-	number = {1},
-	pages = {125-132},
-	year = {2021},
-	doi = {10.1093/bioinformatics/btab643}
-}
-```
